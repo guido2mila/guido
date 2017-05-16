@@ -1,0 +1,62 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+# Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
+VAGRANTFILE_API_VERSION = "2"
+
+ENV['VAGRANT_DEFAULT_PROVIDER'] = 'virtualbox'
+
+#$vagrant_provider = ""
+#$vagrant_provider = "virtualbox"
+$vagrant_box = "centos/7"
+$puppetserver_ip = "192.168.1.10"
+$client_nodes = 2
+
+$setupscript = <<END
+  yum -y update
+  yum -y install https://yum.puppetlabs.com/puppetlabs-release-pc1-el-7.noarch.rpm
+  yum -y install puppet-agent vim telnet nmap
+  localectl set-keymap it
+  timedatectl set-timezone Europe/Rome
+  GTIME=$(cat /etc/default/grub | grep "GRUB_TIMEOUT=")
+  sed -i "s/$GTIME/GRUB_TIMEOUT=0/" /etc/default/grub
+  grub2-mkconfig -o /boot/grub2/grub.cfg
+  echo 'supercede domain-name "example.com";' > /etc/dhcp/dhclient.conf
+  sed -i 's/^SELINUX=.*/SELINUX=disabled/g' /etc/selinux/config
+  setenforce 0
+  systemctl disable firewalld
+END
+
+$setupscript_puppetserver = <<END
+  yum -y install puppetserver
+  systemctl enable puppetserver
+  systemctl start puppetserver
+END
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  config.vm.box = $vagrant_box
+# config.vm.provider $vagrant_provider
+  
+  config.vm.define "puppetserver" do |puppetserver|
+    puppetserver.vm.hostname = "puppet.example.com"
+    puppetserver.vm.network "private_network", ip: $puppetserver_ip
+    puppetserver.vm.provider "virtualbox" do |vbox|
+      vbox.memory = 3072
+      vbox.cpus = 1
+    end
+    puppetserver.vm.provision "shell", inline: $setupscript
+    puppetserver.vm.provision "shell", inline: $setupscript_puppetserver
+    puppetserver.vm.provision "puppet" do |puppet|
+      puppet.environment_path = "puppetlabs/code/environments"
+      puppet.environment = "production"
+    end
+  end
+  
+  (1..$client_nodes).each do |i|
+    config.vm.define vm_name = "client%02d" % i do |client|
+    client.vm.hostname = vm_name + ".example.com"
+    client.vm.provision "shell", inline: $setupscript
+    client.vm.provision "shell", inline: "echo '#{$puppetserver_ip} puppet.example.com puppet' >> /etc/hosts"
+    end
+  end
+  
+end
