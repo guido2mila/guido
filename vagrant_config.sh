@@ -29,7 +29,7 @@ domain = 'example.com'
 box = 'centos/7'
 
 puppet_nodes = [
-  {:hostname => 'puppet',  :ip => '172.16.32.10', :box => box, :fwdhost => 8140, :fwdguest => 8140, :ram => '608'},
+  {:hostname => 'puppet',  :ip => '172.16.32.10', :box => box, :fwdhost => 8140, :fwdguest => 8140, :ram => '768'},
   {:hostname => 'client1', :ip => '172.16.32.11', :box => box},
   {:hostname => 'client2', :ip => '172.16.32.12', :box => box},
 ]
