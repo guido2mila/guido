@@ -1,3 +1,26 @@
+#!/bin/bash
+
+vagrant plugin list | grep -q vagrant-hosts
+if [ $? -eq "1" ]; then
+   vagrant plugin install vagrant-hosts
+fi
+vagrant plugin list | grep -q vagrant-vbguest
+if [ $? -eq "1" ]; then
+   vagrant plugin install vagrant-vbguest
+fi
+
+VAGRANT_DIR="$HOME/Documents/vagrant"
+if [ -d $VAGRANT_DIR ]; then
+  cd $VAGRANT_DIR
+  vagrant destroy -f
+  cd ~/Documents
+  rm -fr $VAGRANT_DIR
+fi
+
+mkdir -p $VAGRANT_DIR
+cd $VAGRANT_DIR
+
+cat << 'EOF' > Vagrantfile
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
@@ -62,3 +85,13 @@ Vagrant.configure("2") do |config|
     end
   end
 end
+EOF
+
+vagrant up
+
+cd $VAGRANT_DIR
+vagrant reload puppet
+for i in $(vagrant status | grep "running " | awk '{print $1}' | grep -v puppet)
+do
+  vagrant reload $i
+done
