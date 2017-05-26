@@ -27,10 +27,9 @@ cat << 'EOF' > Vagrantfile
 ENV['VAGRANT_DEFAULT_PROVIDER'] = 'virtualbox'
 domain = 'example.com'
 box = 'centos/7'
-ram = 1096
 
 puppet_nodes = [
-  {:hostname => 'puppet',  :ip => '172.16.32.10', :box => box, :fwdhost => 8140, :fwdguest => 8140, :ram => ram},
+  {:hostname => 'puppet',  :ip => '172.16.32.10', :box => box, :fwdhost => 8140, :fwdguest => 8140, :ram => '608'},
   {:hostname => 'client1', :ip => '172.16.32.11', :box => box},
   {:hostname => 'client2', :ip => '172.16.32.12', :box => box},
 ]
@@ -76,7 +75,7 @@ Vagrant.configure("2") do |config|
       node_config.vm.provision :hosts, :sync_hosts => true
       if node[:hostname] == "puppet"
         node_config.vm.provision "shell",
-        inline: "yum -y install puppetserver && systemctl enable puppetserver; sed -i 's/-Xms2g -Xmx2g/-Xms1g -Xmx1g/' /etc/sysconfig/puppetserver; systemctl start puppetserver; echo '*." + domain + "' > /etc/puppetlabs/puppet/autosign.conf"
+        inline: "yum -y install puppetserver && systemctl enable puppetserver; sed -i 's/-Xms2g -Xmx2g/-Xms512m -Xmx512m/' /etc/sysconfig/puppetserver; systemctl start puppetserver; echo '*." + domain + "' > /etc/puppetlabs/puppet/autosign.conf"
       end
 #      node_config.vm.provision "puppet" do |puppet|
 #        puppet.manifests_path = 'provision/manifests'
