@@ -49,32 +49,36 @@ done
 #ln -s /opt/sublime_text/sublime_text /usr/bin/subl
 
 #skype
-dnf -y install alsa-lib.i686 fontconfig.i686 freetype.i686 glib2.i686 libSM.i686 libXScrnSaver.i686 libXi.i686 libXrandr.i686 libXrender.i686 libXv.i686 libstdc++.i686 pulseaudio-libs.i686 qt.i686 qt-x11.i686 zlib.i686 qtwebkit.i686
-wget --trust-server-names http://www.skype.com/go/getskype-linux-dynamic
-mkdir /opt/skype
-tar xvf skype-4.3* -C /opt/skype --strip-components=1
-rm -fr skype-4.3*
-ln -s /opt/skype/skype.desktop /usr/share/applications/skype.desktop
-for icon in /opt/skype/icons/*
-do
-  ressuffix="${icon##*_}"
-  res="${ressuffix%%.*}"
-  ln -s "$icon" /usr/share/icons/hicolor/"$res"/apps/skype.png
-done
-gtk-update-icon-cache /usr/share/icons/hicolor
-cat << EOF > /usr/bin/skype
+if [ ! -e "/usr/bin/skype" ]; then
+  dnf -y install alsa-lib.i686 fontconfig.i686 freetype.i686 glib2.i686 libSM.i686 libXScrnSaver.i686 libXi.i686 libXrandr.i686 libXrender.i686 libXv.i686 libstdc++.i686 pulseaudio-libs.i686 qt.i686 qt-x11.i686 zlib.i686 qtwebkit.i686
+  wget --trust-server-names http://www.skype.com/go/getskype-linux-dynamic
+  mkdir /opt/skype
+  tar xvf skype-4.3* -C /opt/skype --strip-components=1
+  rm -fr skype-4.3*
+  ln -s /opt/skype/skype.desktop /usr/share/applications/skype.desktop
+  for icon in /opt/skype/icons/*
+  do
+    ressuffix="${icon##*_}"
+    res="${ressuffix%%.*}"
+    ln -s "$icon" /usr/share/icons/hicolor/"$res"/apps/skype.png
+  done
+  gtk-update-icon-cache /usr/share/icons/hicolor
+  cat << EOF > /usr/bin/skype
 #!/bin/sh
 export SKYPE_HOME="/opt/skype"
 \$SKYPE_HOME/skype --resources=\$SKYPE_HOME \$*
 EOF
-chmod 755 /usr/bin/skype
+  chmod 755 /usr/bin/skype
+fi
 
 #libreoffice
-wget http://download.documentfoundation.org/libreoffice/testing/5.4.0/rpm/x86_64/LibreOfficeDev_5.4.0.0.beta1_Linux_x86-64_rpm.tar.gz
-tar -xvf LibreOfficeDev_5.4.*
-cd LibreOfficeDev_5.4.*
-dnf -y install RPMS/*.rpm
-rm -fr LibreOfficeDev_5.4.*
+if [ ! -e "/usr/bin/libreofficedev5.4" ]; then
+  wget http://download.documentfoundation.org/libreoffice/testing/5.4.0/rpm/x86_64/LibreOfficeDev_5.4.0.0.beta1_Linux_x86-64_rpm.tar.gz
+  tar -xvf LibreOfficeDev_5.4.*
+  cd LibreOfficeDev_5.4.*
+  dnf -y install RPMS/*.rpm
+  rm -fr LibreOfficeDev_5.4.*
+fi
 
 #chrome
 rpm -qa | grep -q "google-chrome"
