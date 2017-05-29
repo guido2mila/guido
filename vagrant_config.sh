@@ -9,17 +9,6 @@ if [ $? -eq "1" ]; then
    vagrant plugin install vagrant-vbguest
 fi
 
-VAGRANT_DIR="$HOME/Documents/vagrant"
-if [ -d $VAGRANT_DIR ]; then
-  cd $VAGRANT_DIR
-  vagrant destroy -f
-  cd ~/Documents
-  rm -fr $VAGRANT_DIR
-fi
-
-mkdir -p $VAGRANT_DIR
-cd $VAGRANT_DIR
-
 cat << 'EOF' > Vagrantfile
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
@@ -77,10 +66,6 @@ Vagrant.configure("2") do |config|
         node_config.vm.provision "shell",
         inline: "yum -y install puppetserver && systemctl enable puppetserver; sed -i 's/-Xms2g -Xmx2g/-Xms768m -Xmx768m/' /etc/sysconfig/puppetserver; systemctl start puppetserver; echo '*." + domain + "' > /etc/puppetlabs/puppet/autosign.conf"
       end
-#      node_config.vm.provision "puppet" do |puppet|
-#        puppet.manifests_path = 'provision/manifests'
-#        puppet.module_path = 'provision/modules'
-#      end
     end
   end
 end
@@ -88,7 +73,6 @@ EOF
 
 vagrant up
 
-cd $VAGRANT_DIR
 vagrant reload puppet
 for i in $(vagrant status | grep "running " | awk '{print $1}' | grep -v puppet)
 do
