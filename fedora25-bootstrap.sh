@@ -6,7 +6,6 @@ GITHUB_ORIGIN="git@github.com:guido2mila/guido.git"
 #some configurations
 localectl set-keymap it
 timedatectl set-timezone Europe/Rome
-GTIME=$(cat /etc/default/grub | grep "GRUB_TIMEOUT=")
 sed -i "s/^GRUB_TIMEOUT=.*/GRUB_TIMEOUT=0/" /etc/default/grub
 grub2-mkconfig -o /boot/grub2/grub.cfg
 sudo_config="$USER ALL=(ALL) NOPASSWD: ALL"
