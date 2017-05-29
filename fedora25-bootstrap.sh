@@ -73,7 +73,7 @@ chmod 755 /usr/bin/skype
 wget http://download.documentfoundation.org/libreoffice/testing/5.4.0/rpm/x86_64/LibreOfficeDev_5.4.0.0.beta1_Linux_x86-64_rpm.tar.gz
 tar -xvf LibreOfficeDev_5.4.*
 cd LibreOfficeDev_5.4.*
-dnf install RPMS/*.rpm
+dnf -y install RPMS/*.rpm
 rm -fr LibreOfficeDev_5.4.*
 
 #chrome
