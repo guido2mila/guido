@@ -23,6 +23,7 @@ systemctl disable firewalld
 #list for gnome: list_pkg=(cheese gnome-documents evolution firefox gnome-clocks gnome-maps gnome-weather shotwell seahorse gedit)
 list_pkg=(firefox xfce4-clipman-plugin abiword libabiword xfce4-about asunder blueman gnome-bluetooth claws-mail fedora-release-notes clipman florence geany gnumeric leafpad orage parole pidgin pragha ristretto xfburn xfdashboard rygel)
 for pkg_to_remove in "${list_pkg[@]}"
+do
   dnf -y remove $pkg_to_remove
 done
 
@@ -36,6 +37,7 @@ dnf -y update
 #packages to install
 list_pkg=(vim gimp thunderbird vlc vagrant git)
 for pkg_to_install in "${list_pkg[@]}"
+do
   dnf -y install $pkg_to_install
 done
 
