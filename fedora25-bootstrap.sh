@@ -20,7 +20,9 @@ systemctl stop firewalld
 systemctl disable firewalld
 
 #remove unused packages and update the system
-for pkg_to_remove in cheese gnome-documents evolution firefox gnome-clocks gnome-maps gnome-weather shotwell seahorse gedit
+#list for gnome: list_pkg=(cheese gnome-documents evolution firefox gnome-clocks gnome-maps gnome-weather shotwell seahorse gedit)
+list_pkg=(firefox xfce4-clipman-plugin abiword libabiword xfce4-about asunder blueman gnome-bluetooth claws-mail fedora-release-notes clipman florence geany gnumeric leafpad orage parole pidgin pragha ristretto xfburn xfdashboard rygel)
+for pkg_to_remove in "${list_pkg[@]}"
 do
 	pkg=$(rpm -qa "$pkg_to_remove")
 	if [ -n "$pkg" ]
@@ -29,13 +31,17 @@ do
 	fi
 done
 
+#remove some directories
+rm -fr /home/guido/.mozilla /home/guido/Music /home/guido/Pictures /home/guido/Public /home/guido/Templates /home/guido/Videos
+
 #rpm to install
 dnf -y install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm http://download.teamviewer.com/download/teamviewer.i686.rpm https://github.com/atom/atom/releases/download/v1.11.1/atom.x86_64.rpm
 
 dnf -y update
 
 #packages to install
-for pkg_to_install in vim gimp thunderbird vlc vagrant git
+list_pkg=(vim gimp thunderbird vlc vagrant git)
+for pkg_to_install in "${list_pkg[@]}"
 do
 	pkg=$(rpm -qa "$pkg_to_install")
 	if [ -z "$pkg" ]
